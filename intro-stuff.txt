@@ -1,0 +1,112 @@
+import subprocess
+import webbrowser
+import spacy
+
+# Load the English NLP model
+nlp = spacy.load("en_core_web_sm")
+
+def process_command(command):
+    doc = nlp(command)
+    
+    # Detect intent (you'll need to expand this)
+    if "install" in command:
+        package = [token.text for token in doc if token.dep_ == "dobj"][0]
+        install_package(package)
+    elif "open" in command:
+        app = [token.text for token in doc if token.dep_ == "dobj"][0]
+        open_application(app)
+    elif "send mail" in command or "send email" in command:
+        recipient = [token.text for token in doc if token.dep_ == "pobj"][-1]
+        send_email(recipient)
+    else:
+        print("I'm not sure how to help with that. Can you please rephrase?")
+
+def install_package(package):
+    confirm = input(f"Do you want to install {package}? (y/n): ")
+    if confirm.lower() == 'y':
+        subprocess.run(["sudo", "apt", "install", package])
+    else:
+        print("Installation cancelled.")
+
+def open_application(app):
+    confirm = input(f"Do you want to open {app}? (y/n): ")
+    if confirm.lower() == 'y':
+        subprocess.Popen(app)
+    else:
+        print("Application launch cancelled.")
+
+def send_email(recipient):
+    webbrowser.open(f"mailto:{recipient}")
+
+def main():
+    while True:
+        user_input = input("How can I help you? ")
+        if user_input.lower() == 'exit':
+            break
+        process_command(user_input)
+
+if __name__ == "__main__":
+    main()
+
+
+
+Chat window code using Tkinter
+sudo pacman -S tk python-tkinter
+
+class ChatGPTLikeGUI:
+    def __init__(self, master):
+        self.master = master
+        master.title("ChatGPT-like Interface")
+        master.geometry("800x600")
+        master.configure(bg='#343541')
+
+        # Configure styles
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure('TFrame', background='#343541')
+        style.configure('TButton', background='#3e3f4b', foreground='white', borderwidth=0)
+        style.map('TButton', background=[('active', '#4a4b59')])
+
+        # Main frame
+        self.main_frame = ttk.Frame(master)
+        self.main_frame.pack(expand=True, fill='both', padx=20, pady=20)
+
+        # Logo (placeholder)
+        logo_label = tk.Label(self.main_frame, text="●", font=("Arial", 40), fg="white", bg="#343541")
+        logo_label.pack(pady=20)
+
+        # Button frame
+        button_frame = ttk.Frame(self.main_frame)
+        button_frame.pack(fill='x', pady=20)
+
+        # Create buttons
+        buttons = [
+            ("Create a cartoon\nillustration\nof my pet", "🖌"),
+            ("Text inviting\nfriend to wedding", "✉"),
+            ("Python script for\ndaily email reports", "💻"),
+            ("Suggest a recipe\nbased on a photo\nof my fridge", "👁")
+        ]
+
+        for text, icon in buttons:
+            button = ttk.Button(button_frame, text=f"{icon}\n{text}", style='TButton', width=20)
+            button.pack(side='left', padx=5, pady=5, expand=True)
+
+        # Input frame
+        input_frame = ttk.Frame(master)
+        input_frame.pack(side='bottom', fill='x', padx=20, pady=20)
+
+        # Input field
+        self.input_field = tk.Entry(input_frame, bg='#40414f', fg='white', insertbackground='white')
+        self.input_field.pack(side='left', expand=True, fill='x', ipady=5)
+
+        # Send button (using unicode paper clip as placeholder for attachment icon)
+        send_button = ttk.Button(input_frame, text="📎", width=3)
+        send_button.pack(side='right', padx=(5, 0))
+
+    def run(self):
+        self.master.mainloop()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ChatGPTLikeGUI(root)
+    app.run()
