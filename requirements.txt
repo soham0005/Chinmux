@@ -1,5 +1,5 @@
 nltk==3.6.5
+tkinter 
 ttkbootstrap
 groq
 python-dotenv
-tkinter

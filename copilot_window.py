@@ -205,6 +205,8 @@ class ModernInteractiveChatGUI:
 
 if __name__ == "__main__":
     try:
+        # subprocess.run(["sudo", "pacman", "-S", "cowsay"], check=True)
+        subprocess.Popen(['/opt/google/chrome/google-chrome'])
         root = ttkb.Window()
         app = ModernInteractiveChatGUI(root)
         print("Chatwindow opened")
