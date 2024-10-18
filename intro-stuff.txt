@@ -1,112 +1,77 @@
+import re
+import tempfile
 import subprocess
-import webbrowser
-import spacy
 
-# Load the English NLP model
-nlp = spacy.load("en_core_web_sm")
+def extract_bash_script(ai_response):
+    script_pattern = r"```bash\n([\s\S]*?)```"
+    match = re.search(script_pattern, ai_response)
+    return match.group(1).strip() if match else None
 
-def process_command(command):
-    doc = nlp(command)
+def save_and_execute_script(script_content):
+    if script_content:
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.sh') as temp_file:
+            temp_file.write(script_content)
+            temp_file_path = temp_file.name
+
+        print(f"Script saved to: {temp_file_path}")
+        subprocess.run(['chmod', '+x', temp_file_path])
+
+        try:
+            result = subprocess.run(['/bin/bash', temp_file_path], 
+                                    capture_output=True, 
+                                    text=True, 
+                                    check=True)
+            print("Script executed successfully.")
+            print("Output:", result.stdout)
+        except subprocess.CalledProcessError as e:
+            print("Error executing the script:")
+            print(e.stderr)
+
+def is_execution_command(user_input):
+    execution_keywords = ['run', 'execute', 'start', 'perform', 'do', 'launch', 'go', 'begin']
+    script_keywords = ['script', 'code', 'command', 'it', 'that']
     
-    # Detect intent (you'll need to expand this)
-    if "install" in command:
-        package = [token.text for token in doc if token.dep_ == "dobj"][0]
-        install_package(package)
-    elif "open" in command:
-        app = [token.text for token in doc if token.dep_ == "dobj"][0]
-        open_application(app)
-    elif "send mail" in command or "send email" in command:
-        recipient = [token.text for token in doc if token.dep_ == "pobj"][-1]
-        send_email(recipient)
+    user_input = user_input.lower()
+    
+    for exec_word in execution_keywords:
+        for script_word in script_keywords:
+            if f"{exec_word} {script_word}" in user_input:
+                return True
+    
+    return False
+
+def process_user_input(user_input, script):
+    if is_execution_command(user_input):
+        print("Script content:")
+        print(script)
+        confirmation = input("Are you sure you want to run this script? (yes/no): ")
+        if confirmation.lower() in ['yes', 'y']:
+            save_and_execute_script(script)
+        else:
+            print("Script execution cancelled.")
     else:
-        print("I'm not sure how to help with that. Can you please rephrase?")
+        print("I'm not sure if you want to run the script. You can say 'run script' if you want to execute it.")
 
-def install_package(package):
-    confirm = input(f"Do you want to install {package}? (y/n): ")
-    if confirm.lower() == 'y':
-        subprocess.run(["sudo", "apt", "install", package])
-    else:
-        print("Installation cancelled.")
+# Example usage in a chat loop
+ai_response = """
+Here's a bash script to update your system:
 
-def open_application(app):
-    confirm = input(f"Do you want to open {app}? (y/n): ")
-    if confirm.lower() == 'y':
-        subprocess.Popen(app)
-    else:
-        print("Application launch cancelled.")
+```bash
+#!/bin/bash
+sudo apt update
+sudo apt upgrade -y
+```
 
-def send_email(recipient):
-    webbrowser.open(f"mailto:{recipient}")
+Let me know if you want to run this script.
+"""
 
-def main():
+script = extract_bash_script(ai_response)
+if script:
+    print("AI Assistant: I've prepared a script for you. Let me know if you want to run it.")
     while True:
-        user_input = input("How can I help you? ")
-        if user_input.lower() == 'exit':
+        user_input = input("You: ")
+        if user_input.lower() in ['exit', 'quit', 'bye']:
             break
-        process_command(user_input)
-
-if __name__ == "__main__":
-    main()
-
-
-
-Chat window code using Tkinter
-sudo pacman -S tk python-tkinter
-
-class ChatGPTLikeGUI:
-    def __init__(self, master):
-        self.master = master
-        master.title("ChatGPT-like Interface")
-        master.geometry("800x600")
-        master.configure(bg='#343541')
-
-        # Configure styles
-        style = ttk.Style()
-        style.theme_use('clam')
-        style.configure('TFrame', background='#343541')
-        style.configure('TButton', background='#3e3f4b', foreground='white', borderwidth=0)
-        style.map('TButton', background=[('active', '#4a4b59')])
-
-        # Main frame
-        self.main_frame = ttk.Frame(master)
-        self.main_frame.pack(expand=True, fill='both', padx=20, pady=20)
-
-        # Logo (placeholder)
-        logo_label = tk.Label(self.main_frame, text="●", font=("Arial", 40), fg="white", bg="#343541")
-        logo_label.pack(pady=20)
-
-        # Button frame
-        button_frame = ttk.Frame(self.main_frame)
-        button_frame.pack(fill='x', pady=20)
-
-        # Create buttons
-        buttons = [
-            ("Create a cartoon\nillustration\nof my pet", "🖌"),
-            ("Text inviting\nfriend to wedding", "✉"),
-            ("Python script for\ndaily email reports", "💻"),
-            ("Suggest a recipe\nbased on a photo\nof my fridge", "👁")
-        ]
-
-        for text, icon in buttons:
-            button = ttk.Button(button_frame, text=f"{icon}\n{text}", style='TButton', width=20)
-            button.pack(side='left', padx=5, pady=5, expand=True)
-
-        # Input frame
-        input_frame = ttk.Frame(master)
-        input_frame.pack(side='bottom', fill='x', padx=20, pady=20)
-
-        # Input field
-        self.input_field = tk.Entry(input_frame, bg='#40414f', fg='white', insertbackground='white')
-        self.input_field.pack(side='left', expand=True, fill='x', ipady=5)
-
-        # Send button (using unicode paper clip as placeholder for attachment icon)
-        send_button = ttk.Button(input_frame, text="📎", width=3)
-        send_button.pack(side='right', padx=(5, 0))
-
-    def run(self):
-        self.master.mainloop()
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ChatGPTLikeGUI(root)
-    app.run()
+        process_user_input(user_input, script)
+else:
+    print("No bash script found in the AI response.")
