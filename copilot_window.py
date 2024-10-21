@@ -5,7 +5,10 @@ import subprocess
 import sys
 import os
 
-# Add the current directory to Python's module search path
+
+# sudo apt-get install python3-tk
+
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
 
@@ -205,8 +208,6 @@ class ModernInteractiveChatGUI:
 
 if __name__ == "__main__":
     try:
-        # subprocess.run(["sudo", "pacman", "-S", "cowsay"], check=True)
-        subprocess.Popen(['/opt/google/chrome/google-chrome'])
         root = ttkb.Window()
         app = ModernInteractiveChatGUI(root)
         print("Chatwindow opened")
