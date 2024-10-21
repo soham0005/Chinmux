@@ -59,9 +59,9 @@ class ModernInteractiveChatGUI:
         # Create buttons with modern design
         buttons = [
             ("Introduce the AI Agent", "🖌"),
-            ("Text inviting friend to wedding", "✉"),
+            ("Bash Script to install google chrome", "💻"),
             ("Python script for daily email reports", "💻"),
-            ("Suggest a recipe based on a photo of my fridge", "👁")
+            ("Suggest steps to learn python", "👁")
         ]
 
         for text, icon in buttons:
