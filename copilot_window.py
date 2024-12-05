@@ -14,6 +14,7 @@ sys.path.append(current_dir)
 
 # Now import the AIAgent class from chatbot.py
 from chatbot import AIAgent
+from ExecutionEngine import main
 
 class ModernInteractiveChatGUI:
     def __init__(self, master):
@@ -149,6 +150,12 @@ class ModernInteractiveChatGUI:
         response = self.ai_agent.get_response(user_message)
         self.hide_loader()
         self.add_message("Agent", response, False)
+        
+        if any(keyword in user_message.lower() for keyword in ["install", "execute", "open"]):
+            print("Response that will be given to Task Execution Engine is:--> ",response)
+            main(response)
+            
+            
 
     def add_message(self, sender, content, is_user):
         message_frame = ttkb.Frame(self.message_frame, style="TFrame")

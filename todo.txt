@@ -1,0 +1,20 @@
+1) Yes / No toggle options to execute it in Frontend
+2) Send the Response generated from the AI to Execute Engine
+3) Execute Engine - Done
+4) Selectable Frontend text from Frames
+5) UI Improvement
+6) Job Schedular
+
+
+
+
+Services:-
+
+1) Code Improvement
+2) Task Execution Engine
+
+
+
+Task Execution Engine:
+1) Firefox, Chrome
+2) Calendar, Code

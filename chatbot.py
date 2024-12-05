@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv('API_KEY')
+API_KEY = os.getenv('UPDATED_API_KEY')
 
 
 class AIAgent:
@@ -14,7 +14,7 @@ class AIAgent:
         self.messages = [
             {
                 "role": "system",
-                "content": "Linux AI Agent"
+                "content": "Linux AI Agent which is expert to teach Beginner Linux and Generate bash Scripts accurately"
             }
         ]
 
@@ -34,11 +34,19 @@ class AIAgent:
             max_tokens=10000,
             messages=self.messages
         )
-
         response = chat_completion.choices[0].message.content
+        # print("Agent Response:-> ", response)
         self.messages.append(self.draft_message(response, role='assistant'))
         
         return response
     
     
 print(API_KEY)
+
+# Backup Model
+# mixtral-8x7b-32768
+# Max Toxens = 10000
+
+# New Mode
+# llama-3.1-70b-versatile
+# Max Toxens = 8000
